@@ -18,6 +18,7 @@ func get(index int) int {
 
 type Student struct {
 	name string
+	age  int
 }
 
 func (stu *Student) hello(person string) string {
