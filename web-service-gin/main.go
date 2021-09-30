@@ -28,6 +28,7 @@ var albums = []album{
 func getAlbums(c *gin.Context) {
 	// serialize the struct into JSON and add it to the response.
 	c.IndentedJSON(http.StatusOK, albums)
+	// c.JSON(http.StatusOK, albums)
 	// Note that you can replace Context.IndentedJSON with a call to Context.JSON to send more compact JSON.
 }
 
@@ -49,12 +50,31 @@ func postAlbums(c *gin.Context) {
 	c.IndentedJSON(http.StatusCreated, newAlbum)
 }
 
+// getAlbumByID locates the album whose ID value matches the id
+// parameter sent by the client, then returns that album as a response.
+func getAlbumByID(c *gin.Context) {
+	id := c.Param("id")
+	// Use Context.Param to retrieve the id path parameter from the URL.
+	// When you map this handler to a path, you’ll include a placeholder for the parameter in the path.
+
+	for _, a := range albums {
+		if a.ID == id {
+			c.IndentedJSON(http.StatusOK, a)
+			return
+		}
+	}
+	c.IndentedJSON(http.StatusNotFound, gin.H{"message": "album not found"})
+}
+
 func main() {
+	gin.SetMode(gin.ReleaseMode)
 	router := gin.Default()
 	router.GET("/albums", getAlbums)
 	router.POST("/albums", postAlbums)
+	router.GET("/albums/:id", getAlbumByID)
 	// With Gin, you can associate a handler with an HTTP method-and-path combination.
 	// In this way, you can separately route requests sent to a single path based on the method the client is using.
+	// In Gin, the colon preceding an item in the path signifies that the item is a path parameter.
 
 	router.Run("localhost:8080")
 	// Use the Run function to attach the router to an http.Server and start the server.
